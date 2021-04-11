@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, dialog } = require('electron');
+const { app, BrowserWindow, dialog, ipcMain } = require('electron');
 const path = require('path');
 
 /**
@@ -21,8 +21,14 @@ switch (process.platform) {
 
 const pdir = path.join(__dirname, "mpv", os);
 if (process.platform !== "linux") {process.chdir(pdir);}
+// Fix for latest Electron.
+app.commandLine.appendSwitch('no-sandbox');
 app.commandLine.appendSwitch("ignore-gpu-blacklist");
 app.commandLine.appendSwitch("register-pepper-plugins", getPluginEntry(pdir));
+
+ipcMain.on('open-dialog', (event, ...args) => {
+    event.returnValue = dialog.showOpenDialogSync(...args);
+})
 
 /**
  * End of MPV Setup
@@ -42,6 +48,8 @@ function createWindow() {
         width: 800,
         height: 600,
         webPreferences: {
+            preload: path.join(__dirname, 'preload.js'),
+            contextIsolation: true,
             plugins: true
         },
         // Use this in development mode.

@@ -2,8 +2,12 @@
   import { onDestroy, onMount } from 'svelte';
   // Importing this here requires rollup-plugin-node-builtins
   import { MpvJs } from 'mpv.js-vanilla';
-  const path = require('path');
-  const { remote } = require('electron');
+
+  // Node.JS and Electron APIs from preload
+  const path = window.nodejs.path;
+  const __dirname = window.nodejs.dirname;
+  const cwd = window.nodejs.cwd;
+  const showOpenDialogSync = window.electron.dialog.showOpenDialogSync;
 
   const handleMPVReady = (mpv) => {
     const observe = mpv.observe.bind(mpv);
@@ -11,9 +15,8 @@
     mpv.property('hwdec', 'auto');
     const pathToFile =
       process.env.NODE_ENV === 'development'
-        ? path.join(process.cwd(), '../../tos.mkv')
+        ? path.join(cwd, '../../tos.mkv')
         : path.join(__dirname, 'tos.mkv');
-    console.log(pathToFile);
     mpv.command('loadfile', pathToFile);
   };
   const handlePropertyChange = (name, value) => {
@@ -68,7 +71,7 @@
   };
   const handleLoad = (e) => {
     e.target.blur();
-    const items = remote.dialog.showOpenDialog({
+    const items = showOpenDialogSync({
       filters: [
         { name: 'Videos', extensions: ['mkv', 'webm', 'mp4', 'mov', 'avi'] },
         { name: 'All files', extensions: ['*'] },
