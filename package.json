@@ -26,11 +26,13 @@
     "@rollup/plugin-commonjs": "^17.0.0",
     "@rollup/plugin-node-resolve": "^11.0.0",
     "concurrently": "^6.0.1",
-    "electron": "^12.0.2",
+    "electron": "^3.1.13",
     "electron-builder": "^22.10.5",
     "rollup": "^2.3.4",
     "rollup-plugin-css-only": "^3.1.0",
+    "rollup-plugin-inject-process-env": "^1.3.1",
     "rollup-plugin-livereload": "^2.0.0",
+    "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-svelte": "^7.0.0",
     "rollup-plugin-terser": "^7.0.0",
     "svelte": "^3.37.0",
@@ -38,6 +40,7 @@
   },
   "dependencies": {
     "electron-serve": "^1.1.0",
+    "mpv.js-vanilla": "^0.3.4",
     "sirv-cli": "^1.0.0"
   }
 }

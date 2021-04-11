@@ -1,8 +1,32 @@
 // Modules to control application life and create native browser window
 const { app, BrowserWindow, dialog } = require('electron');
 const path = require('path');
-const serve = require('electron-serve');
-const loadURL = serve({ directory: 'public' });
+
+/**
+ * Start of MPV setup
+ * Don't forget to set webPreferences.plugins = true
+ */
+
+const {getPluginEntry} = require("mpv.js-vanilla");
+
+let os;
+switch (process.platform) {
+  case 'darwin':
+    os='mac'
+    break;
+  case 'win32':
+    os = 'win'
+    break;
+}
+
+const pdir = path.join(__dirname, "mpv", os);
+if (process.platform !== "linux") {process.chdir(pdir);}
+app.commandLine.appendSwitch("ignore-gpu-blacklist");
+app.commandLine.appendSwitch("register-pepper-plugins", getPluginEntry(pdir));
+
+/**
+ * End of MPV Setup
+ */
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -18,7 +42,7 @@ function createWindow() {
         width: 800,
         height: 600,
         webPreferences: {
-            nodeIntegration: true
+            plugins: true
         },
         // Use this in development mode.
         icon: isDev() ? path.join(process.cwd(), 'public/favicon.png') : path.join(__dirname, 'public/favicon.png'),
@@ -32,7 +56,7 @@ function createWindow() {
     if (isDev()) {
         mainWindow.loadURL('http://localhost:5000/');
     } else {
-        loadURL(mainWindow);
+        mainWindow.loadFile(path.join(__dirname, 'public/index.html'))
     }
     
     // Uncomment the following line of code when app is ready to be packaged.
